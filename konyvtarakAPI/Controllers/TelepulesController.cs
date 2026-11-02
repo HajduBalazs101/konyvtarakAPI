@@ -108,6 +108,23 @@ namespace konyvtarakAPI.Controllers
             }
         }
 
+        [HttpGet("GetbyNevResz/{nevResz}")]
+        public IActionResult GetByNevResz(string nevResz)
+        {
+            try
+            {
+                List<Telepulesek> talalat = _context.Telepuleseks.Where(t => t.TelepNev.Contains(nevResz)).ToList();
+                if (talalat == null)
+                {
+                    return NotFound("Nincs ilyen adat");
+                }
+                return Ok(talalat);
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, "Something went wrong: " + ex.Message);
+            }
+        }
         //async függvények
         [HttpGet("GetAllAsync")]
         public async Task<IActionResult> GetAllAsync()
