@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace konyvtarakAPI.Models;
 
@@ -12,6 +13,6 @@ public partial class Konyvtarak
     public int Irsz { get; set; }
 
     public string Cim { get; set; } = null!;
-
+    //[JsonIgnore]
     public virtual Telepulesek? IrszNavigation { get; set; } = null!;
 }

@@ -1,4 +1,5 @@
-﻿using konyvtarakAPI.Models;
+﻿using konyvtarakAPI.DTOs;
+using konyvtarakAPI.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -125,6 +126,53 @@ namespace konyvtarakAPI.Controllers
                 return StatusCode(500, "Something went wrong: " + ex.Message);
             }
         }
+
+        [HttpGet("TelepKonyvtar")]
+        public IActionResult TelepKonyvtar()
+        {
+            try
+            {
+                var telepules = _context.Telepuleseks.Include(t => t.Konyvtaraks).ToList();
+                if (telepules == null)
+                {
+                    return NotFound("Nincs ilyen adat");
+                }
+                return Ok(telepules);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Something went wrong: " + ex.Message);
+            }
+        }
+
+        [HttpGet("TelepulesKonyvtarai/{telepNev}")]
+        public IActionResult GetTelepKonyvtarNevMegye(string telepNev)
+        {
+            try
+            {
+                List<TelepulesKonyvtarai> talalat = _context.Telepuleseks.
+                    Include(t => t.Konyvtaraks).
+                    Include(t => t.Megye).
+                    Where(t => t.TelepNev == telepNev).
+                    Select(k => new TelepulesKonyvtarai
+                    {
+                        TelepNev = k.TelepNev,
+                        KonyvtarNev = k.Konyvtaraks.Select(k => k.KonyvtarNev).FirstOrDefault(),
+                        MegyeNev = k.Megye.MegyeNev
+                    }).
+                    ToList();
+                if (talalat == null)
+                {
+                    return NotFound("Nincs ilyen adat");
+                }
+                return Ok(talalat);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Something went wrong: " + ex.Message);
+            }
+        }
+
         //async függvények
         [HttpGet("GetAllAsync")]
         public async Task<IActionResult> GetAllAsync()
